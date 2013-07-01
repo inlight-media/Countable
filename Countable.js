@@ -14,7 +14,7 @@
  */
 
 ;(function (global) {
-  'use strict'
+  'use strict';
 
   /**
    * @private
@@ -27,7 +27,7 @@
    */
 
   var _liveElements = [],
-      _event = 'oninput' in document ? 'input' : 'keyup'
+      _event = 'oninput' in document ? 'input' : 'keyup';
 
   /**
    * `String.trim()` polyfill for non-supporting browsers. This is the
@@ -42,8 +42,8 @@
 
   if (!String.prototype.trim) {
     String.prototype.trim = function () {
-      return this.replace(/^\s+|\s+$/g, '')
-    }
+      return this.replace(/^\s+|\s+$/g, '');
+    };
   }
 
   /**
@@ -67,31 +67,31 @@
     var output = [],
         counter = 0,
         length = string.length,
-        value, extra
+        value, extra;
 
     while (counter < length) {
-      value = string.charCodeAt(counter++)
+      value = string.charCodeAt(counter++);
 
       if ((value & 0xF800) == 0xD800 && counter < length) {
 
         // High surrogate, and there is a next character.
 
-        extra = string.charCodeAt(counter++)
+        extra = string.charCodeAt(counter++);
 
         if ((extra & 0xFC00) == 0xDC00) {
 
           // Low surrogate.
 
-          output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000)
+          output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
         } else {
-          output.push(value, extra)
+          output.push(value, extra);
         }
       } else {
-        output.push(value)
+        output.push(value);
       }
     }
 
-    return output
+    return output;
   }
 
   /**
@@ -110,14 +110,14 @@
 
   function _validateArguments (elements, callback) {
     var elementsValid = elements && ((Object.prototype.toString.call(elements) === '[object NodeList]' && elements.length) || (elements.nodeType === 1)),
-        callbackValid = callback && typeof callback === 'function'
+        callbackValid = callback && typeof callback === 'function';
 
     if ('console' in window && 'warn' in console) {
-      if (!elementsValid) console.warn('Countable: No valid elements were found')
-      if (!callbackValid) console.warn('Countable: "' + callback + '" is not a valid callback function')
+      if (!elementsValid) console.warn('Countable: No valid elements were found');
+      if (!callbackValid) console.warn('Countable: "' + callback + '" is not a valid callback function');
     }
 
-    return elementsValid && callbackValid
+    return elementsValid && callbackValid;
   }
 
   /**
@@ -138,13 +138,13 @@
    */
 
   function _extendDefaults (options) {
-    var defaults = { hardReturns: false, stripTags: false }
+    var defaults = { hardReturns: false, stripTags: false };
 
     for (var prop in options) {
-      if (defaults.hasOwnProperty(prop)) defaults[prop] = options[prop]
+      if (defaults.hasOwnProperty(prop)) defaults[prop] = options[prop];
     }
 
-    return defaults
+    return defaults;
   }
 
   /**
@@ -163,7 +163,7 @@
 
   function _count (element, options) {
     var original = 'value' in element ? element.value : element.innerText || element.textContent,
-        temp, trimmed
+        temp, trimmed;
 
     /**
      * The initial implementation to allow for HTML tags stripping was created
@@ -173,9 +173,9 @@
      * @see <http://goo.gl/gFQQh>
      */
 
-    if (options.stripTags) original = original.replace(/<\/?[a-z][^>]*>/gi, '')
+    if (options.stripTags) original = original.replace(/<\/?[a-z][^>]*>/gi, '');
 
-    trimmed = original.trim()
+    trimmed = original.trim();
 
     /**
      * Most of the performance improvements are based on the works of @epmatsw.
@@ -188,7 +188,7 @@
       words: trimmed ? (trimmed.replace(/['";:,.?¿\-!¡]+/g, '').match(/\S+/g) || []).length : 0,
       characters: trimmed ? _decode(trimmed.replace(/\s/g, '')).length : 0,
       all: _decode(original.replace(/[\n\r]/g, '')).length
-    }
+    };
   }
 
   /**
@@ -205,14 +205,14 @@
    */
 
   function _loop (which, callback) {
-    var len = which.length
+    var len = which.length;
 
     if (typeof len !== 'undefined') {
       while (len--) {
-        callback(which[len])
+        callback(which[len]);
       }
     } else {
-      callback(which)
+      callback(which);
     }
   }
 
@@ -249,29 +249,29 @@
       var ops = _extendDefaults(options),
           bind = function (element) {
             var handler = function () {
-                  callback.call(element, _count(element, ops))
-                }
+                  callback.call(element, _count(element, ops));
+                };
 
-            _liveElements.push({ element: element, handler: handler })
+            _liveElements.push({ element: element, handler: handler });
 
-            handler()
+            handler();
 
             if (element.addEventListener) {
-              element.addEventListener(_event, handler, false)
+              element.addEventListener(_event, handler, false);
             } else if (element.attachEvent) {
-              element.attachEvent('on' + _event, handler)
+              element.attachEvent('on' + _event, handler);
             }
-          }
+          };
 
-      if (!_validateArguments(elements, callback)) return
+      if (!_validateArguments(elements, callback)) return;
 
       if (elements.length) {
-        _loop(elements, bind)
+        _loop(elements, bind);
       } else {
-        bind(elements)
+        bind(elements);
       }
 
-      return this
+      return this;
     },
 
     /**
@@ -285,27 +285,27 @@
      */
 
     die: function (elements) {
-      if (!_validateArguments(elements, function () {})) return
+      if (!_validateArguments(elements, function () {})) return;
 
       _loop(elements, function (element) {
-        var liveElement
+        var liveElement;
 
         _loop(_liveElements, function (live) {
-          if (live.element === element) liveElement = live
-        })
+          if (live.element === element) liveElement = live;
+        });
 
-        if (!liveElement) return
+        if (!liveElement) return;
 
         if (element.removeEventListener) {
-          element.removeEventListener(_event, liveElement.handler, false)
+          element.removeEventListener(_event, liveElement.handler, false);
         } else if (element.detachEvent) {
-          element.detachEvent('on' + _event, liveElement.handler)
+          element.detachEvent('on' + _event, liveElement.handler);
         }
 
-        _liveElements.splice(_liveElements.indexOf(liveElement), 1)
-      })
+        _liveElements.splice(_liveElements.indexOf(liveElement), 1);
+      });
 
-      return this
+      return this;
     },
 
     /**
@@ -329,13 +329,13 @@
      */
 
     once: function (callback, options) {
-      if (!_validateArguments(elements, callback)) return
+      if (!_validateArguments(elements, callback)) return;
 
       _loop(elements, function (element) {
-        callback.call(element, _count(element, _extendDefaults(options)))
-      })
+        callback.call(element, _count(element, _extendDefaults(options)));
+      });
 
-      return this
+      return this;
     },
 
     /**
@@ -349,18 +349,18 @@
      */
 
     enabled: function (element) {
-      var isEnabled = false
+      var isEnabled = false;
 
       if (element && element.nodeType === 1) {
         _loop(_liveElements, function (live) {
-          if (live.element === element) isEnabled = true
-        })
+          if (live.element === element) isEnabled = true;
+        });
       }
 
-      return isEnabled
+      return isEnabled;
     }
 
-  }
+  };
 
   /**
    * Expose Countable depending on the module system used across the
@@ -368,10 +368,10 @@
    */
 
   if (typeof exports === 'object') {
-    module.exports = Countable
+    module.exports = Countable;
   } else if (typeof define === 'function' && define.amd) {
-    define(function () { return Countable })
+    define(function () { return Countable; });
   } else {
-    global.Countable = Countable
+    global.Countable = Countable;
   }
-}(this))
+}(this));
